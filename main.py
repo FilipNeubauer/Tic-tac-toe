@@ -61,6 +61,13 @@ def draw_board(board):
         for index_j, j in enumerate(i):
             draw_tile(board, Tile(index_j, index_i, None))
 
+    for index_i, i in enumerate(board.board):
+        for index_j, j in enumerate(i):
+            if j == "x":
+                draw_x(index_j, index_i, board)
+            if j == "o":
+                draw_o(index_j, index_i, board)
+
 
 def get_tile_clicked(board, coordinates):
     for i in range(board.height):
