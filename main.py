@@ -63,9 +63,9 @@ def draw_board(board):
 
     for index_i, i in enumerate(board.board):
         for index_j, j in enumerate(i):
-            if j == "x":
+            if j.type == "x":
                 draw_x(index_j, index_i, board)
-            if j == "o":
+            if j.type == "o":
                 draw_o(index_j, index_i, board)
 
 
