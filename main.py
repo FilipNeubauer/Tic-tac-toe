@@ -12,6 +12,10 @@ BG_COLOR = "white"
 X_COLOR = "red"
 O_COLOR = "red"
 CURRENT_PLAYER = None
+horizontal = 'horizontal'
+vertical = 'vertical'
+decreasing = 'decreasing'
+increasing = 'increasing'
 
 
 class Tile:
@@ -85,6 +89,7 @@ def write_down_mark(board, player, x, y):
         player = 'x'
     return player
 
+
 def draw_x(x, y, board):    #dostane souřadnice na board x, y
     left, top = get_left_top_of_tile(board, Tile(x, y, None))
     left_top = (left, top)
@@ -97,7 +102,6 @@ def draw_x(x, y, board):    #dostane souřadnice na board x, y
     pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_bot, right_top, width=2)
 
 
-
 def draw_o(x, y, board):
     left, top = get_left_top_of_tile(board, Tile(x, y, None))
     left += TILE_SIZE/2
@@ -106,8 +110,42 @@ def draw_o(x, y, board):
     pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
 
 
+def get_movement(direction):
+    if direction is horizontal:
+        movement = [[1,0], [-1,0]]
+    elif direction is vertical:
+        movement = [[0,1], [0, -1]]
+    elif direction is decreasing:
+        movement = [[-1,-1], [1,1]]
+    elif direction is increasing:
+        movement = [[-1,1], [1,-1]]
+    return movement
 
 
+def winning_chain(board, x, y):
+    current_type = board.board[y][x].type
+    directions = [horizontal, vertical, decreasing, increasing]
+    max_length = 0
+    length = 0
+    x_n, y_n = x, y
+    for direction in directions:
+        movement = get_movement(direction)
+        while board.board[y_n][x_n].type == current_type:
+            length += 1
+            x_n += movement[0][0]
+            y_n += movement[0][1]
+        x_n += movement[1][0]
+        y_n += movement[1][1]
+        while board.board[y_n][x_n].type == current_type:
+            length += 1
+            x_n += movement[1][0]
+            y_n += movement[1][1]
+        if length > max_length:
+            max_length = length
+    if max_length > 3:
+        return True
+    else:
+        return False
 
 def main():
     global DISPLAY_SURFACE, CURRENT_PLAYER
@@ -117,9 +155,6 @@ def main():
     game_board = Board(10, 10)
     game_board.generate()
     CURRENT_PLAYER = 'x'
-
-
-    
     while True:
         pygame.display.update()
         draw_board(game_board)
