@@ -11,6 +11,8 @@ WINDOWHEIGHT = 520
 DISPLAY_SURFACE = None
 TILE_COLOR = "black"
 BG_COLOR = "white"
+X_COLOR = "red"
+O_COLOR = "red"
 CURRENT_PLAYER = None
 
 class Tile:
@@ -61,6 +63,29 @@ def draw_board(board):
 
 
 
+def draw_x(x, y, board):    #dostane souřadnice na board x, y
+    left, top = get_left_top_of_tile(board, Tile(x, y, None))
+    left_top = (left, top)
+    right_bot = (left + TILE_SIZE, top + TILE_SIZE)
+
+    left_bot = (left, top + TILE_SIZE)
+    right_top = (left + TILE_SIZE, top)
+
+    pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_top, right_bot, width=2)
+    pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_bot, right_top, width=2)
+
+
+
+def draw_o(x, y, board):
+    left, top = get_left_top_of_tile(board, Tile(x, y, None))
+    left += TILE_SIZE/2
+    top += TILE_SIZE/2
+    radius = TILE_SIZE/2 - 5
+    pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
+
+
+
+
 
 def main():
     global DISPLAY_SURFACE, CURRENT_PLAYER
@@ -70,6 +95,8 @@ def main():
     game_board = Board(10,10)
     game_board.generate()
     CURRENT_PLAYER = 'x'
+
+
     
     while True:
         pygame.display.update()
