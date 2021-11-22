@@ -190,15 +190,16 @@ def main():
                 terminate()
             elif event.type == MOUSEBUTTONUP:
                 coordinates = event.pos
-                x, y = get_tile_clicked(game_board, coordinates)
-                if x is not None and game_board.board[y][x].type is None:
-                    CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
-                    if winning_chain(game_board, x, y):
-                        end_game = True
-                        if CURRENT_PLAYER == 'o':
-                            winner = 'x'
-                        else:
-                            winner = 'o'
+                if not end_game:
+                    x, y = get_tile_clicked(game_board, coordinates)
+                    if x is not None and game_board.board[y][x].type is None:
+                        CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
+                        if winning_chain(game_board, x, y):
+                            end_game = True
+                            if CURRENT_PLAYER == 'o':
+                                winner = 'x'
+                            else:
+                                winner = 'o'
 
 
 if __name__ == '__main__':
