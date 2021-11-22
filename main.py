@@ -11,6 +11,7 @@ TILE_COLOR = "black"
 BG_COLOR = "white"
 X_COLOR = "red"
 O_COLOR = "red"
+END_COLOR = "red"
 CURRENT_PLAYER = None
 
 
@@ -113,6 +114,12 @@ def draw_o(x, y, board):
     pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
 
 
+def win(winner):
+    game_end_font = pygame.font.Font('freesansbold.ttf', 150)
+    game_end_surface = game_end_font.render(f"{winner} won!", True, END_COLOR)
+    game_end_rect = game_end_surface.get_rect()
+    game_end_rect.midtop = (WINDOWWIDTH/2, 10)
+    DISPLAY_SURFACE.blit(game_end_surface, game_end_rect)
 
 
 
