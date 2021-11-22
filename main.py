@@ -77,6 +77,11 @@ def get_tile_clicked(board, coordinates):
 
 def write_down_mark(board, player, x, y):
     board.board[y][x].type = player
+    if player is 'x':
+        player = 'o'
+    else:
+        player = 'x'
+    return player
 
 
 def main():
@@ -97,7 +102,7 @@ def main():
             elif event.type == MOUSEBUTTONUP:
                 coordinates = event.pos
                 x, y = get_tile_clicked(game_board, coordinates)
-                write_down_mark(game_board, CURRENT_PLAYER, x, y)
+                CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
 
 
 if __name__ == '__main__':
