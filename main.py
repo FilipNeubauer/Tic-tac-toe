@@ -102,7 +102,8 @@ def main():
             elif event.type == MOUSEBUTTONUP:
                 coordinates = event.pos
                 x, y = get_tile_clicked(game_board, coordinates)
-                CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
+                if x is not None:
+                    CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
 
 
 if __name__ == '__main__':
