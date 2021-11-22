@@ -153,9 +153,7 @@ def winning_chain(board, x, y):
                 y_n += side[1]
         if length - 1 > max_length:
             max_length = length - 1
-        print(length)
         length = 0
-    print(max_length)
     if max_length > 3:
         return True
     else:
@@ -170,14 +168,22 @@ def win(winner):
     DISPLAY_SURFACE.blit(game_end_surface, game_end_rect)
 
 
-def main():
+def second_game():
+    font = pygame.font.Font('freesansbold.ttf', 50)
+    second_game_surface = font.render(f"new game", True, END_COLOR)
+    second_game_rect = second_game_surface.get_rect()
+    second_game_rect.midtop = (WINDOWWIDTH / 2, 200)
+    DISPLAY_SURFACE.blit(second_game_surface, second_game_rect)
+
+
+def main(first_player='x'):
     global DISPLAY_SURFACE, CURRENT_PLAYER
     
     pygame.init()
     DISPLAY_SURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     game_board = Board(10, 10)
     game_board.generate()
-    CURRENT_PLAYER = 'x'
+    CURRENT_PLAYER = first_player
     end_game = None
     winner = None
     while True:
@@ -185,6 +191,7 @@ def main():
         draw_board(game_board)
         if end_game:
             win(winner)
+            second_game()
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
