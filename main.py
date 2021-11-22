@@ -168,12 +168,13 @@ def win(winner):
     DISPLAY_SURFACE.blit(game_end_surface, game_end_rect)
 
 
-def second_game():
+def new_game_text():
     font = pygame.font.Font('freesansbold.ttf', 50)
-    second_game_surface = font.render(f"new game", True, END_COLOR)
-    second_game_rect = second_game_surface.get_rect()
-    second_game_rect.midtop = (WINDOWWIDTH / 2, 200)
-    DISPLAY_SURFACE.blit(second_game_surface, second_game_rect)
+    new_game_surface = font.render(f"new game", True, END_COLOR)
+    new_game_rect = new_game_surface.get_rect()
+    new_game_rect.midtop = (WINDOWWIDTH / 2, 200)
+    DISPLAY_SURFACE.blit(new_game_surface, new_game_rect)
+    return new_game_rect
 
 
 def main(first_player='x'):
@@ -191,7 +192,7 @@ def main(first_player='x'):
         draw_board(game_board)
         if end_game:
             win(winner)
-            second_game()
+            new_game_rect = new_game_text()
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
@@ -207,6 +208,9 @@ def main(first_player='x'):
                                 winner = 'x'
                             else:
                                 winner = 'o'
+                else:
+                    if new_game_rect.collidepoint(coordinates):
+                        main('o')
 
 
 if __name__ == '__main__':
