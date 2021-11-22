@@ -178,9 +178,13 @@ def main():
     game_board = Board(10, 10)
     game_board.generate()
     CURRENT_PLAYER = 'x'
+    end_game = None
+    winner = None
     while True:
         pygame.display.update()
         draw_board(game_board)
+        if end_game:
+            win(winner)
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
@@ -189,6 +193,12 @@ def main():
                 x, y = get_tile_clicked(game_board, coordinates)
                 if x is not None and game_board.board[y][x].type is None:
                     CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
+                    if winning_chain(game_board, x, y):
+                        end_game = True
+                        if CURRENT_PLAYER == 'o':
+                            winner = 'x'
+                        else:
+                            winner = 'o'
 
 
 if __name__ == '__main__':
