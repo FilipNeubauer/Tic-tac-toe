@@ -90,7 +90,7 @@ def get_tile_clicked(board, coordinates):
 
 def write_down_mark(board, player, x, y):
     board.board[y][x].type = player
-    if player is 'x':
+    if player == 'x':
         player = 'o'
     else:
         player = 'x'
@@ -119,14 +119,22 @@ def draw_o(x, y, board):
 
 def get_movement(direction):
     if direction is horizontal:
-        movement = [[1,0], [-1,0]]
+        movement = [[1, 0], [-1, 0]]
     elif direction is vertical:
-        movement = [[0,1], [0, -1]]
+        movement = [[0, 1], [0, -1]]
     elif direction is decreasing:
-        movement = [[-1,-1], [1,1]]
+        movement = [[-1, -1], [1, 1]]
     elif direction is increasing:
-        movement = [[-1,1], [1,-1]]
+        movement = [[-1, 1], [1, -1]]
     return movement
+
+
+def is_in_board(board, x, y):
+    height = board.height
+    width = board.width
+    if 0 <= x < width and 0 <= y < height:
+        return True
+    return False
 
 
 def winning_chain(board, x, y):
@@ -134,25 +142,24 @@ def winning_chain(board, x, y):
     directions = [horizontal, vertical, decreasing, increasing]
     max_length = 0
     length = 0
-    x_n, y_n = x, y
     for direction in directions:
         movement = get_movement(direction)
-        while board.board[y_n][x_n].type == current_type:
-            length += 1
-            x_n += movement[0][0]
-            y_n += movement[0][1]
-        x_n += movement[1][0]
-        y_n += movement[1][1]
-        while board.board[y_n][x_n].type == current_type:
-            length += 1
-            x_n += movement[1][0]
-            y_n += movement[1][1]
-        if length > max_length:
-            max_length = length
+        for side in movement:
+            x_n, y_n = x, y
+            while is_in_board(board, x_n, y_n) and board.board[y_n][x_n].type == current_type:
+                length += 1
+                x_n += side[0]
+                y_n += side[1]
+        if length - 1 > max_length:
+            max_length = length - 1
+        print(length)
+        length = 0
+    print(max_length)
     if max_length > 3:
         return True
     else:
         return False
+
 
 def main():
     global DISPLAY_SURFACE, CURRENT_PLAYER
