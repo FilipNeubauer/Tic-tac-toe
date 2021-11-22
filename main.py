@@ -11,6 +11,7 @@ WINDOWHEIGHT = 520
 DISPLAY_SURFACE = None
 TILE_COLOR = "black"
 BG_COLOR = "white"
+CURRENT_PLAYER = None
 
 class Tile:
     def __init__(self, x, y, tile_type):
@@ -62,19 +63,17 @@ def draw_board(board):
 
 
 def main():
-    global DISPLAY_SURFACE
+    global DISPLAY_SURFACE, CURRENT_PLAYER
     
     pygame.init()
     DISPLAY_SURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     game_board = Board(10,10)
     game_board.generate()
-
+    CURRENT_PLAYER = 'x'
     
     while True:
         pygame.display.update()
-
         draw_board(game_board)
-
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
