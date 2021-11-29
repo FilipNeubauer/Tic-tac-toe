@@ -3,15 +3,15 @@ import pygame
 from pygame.locals import *
 
 TILE_SIZE = 40
-WINDOWWIDTH = 600
+WINDOWWIDTH = 550
 WINDOWHEIGHT = 520
 
 DISPLAY_SURFACE = None
-TILE_COLOR = "black"
-BG_COLOR = "white"
-X_COLOR = "red"
+TILE_COLOR = "white"
+BG_COLOR = "grey"
+X_COLOR = "blue"
 O_COLOR = "red"
-END_COLOR = "red"
+END_COLOR = "black"
 CURRENT_PLAYER = None
 horizontal = 'horizontal'
 vertical = 'vertical'
@@ -114,7 +114,7 @@ def draw_o(x, y, board):
     left, top = get_left_top_of_tile(board, Tile(x, y, None))
     left += TILE_SIZE/2
     top += TILE_SIZE/2
-    radius = TILE_SIZE/2 - 5
+    radius = TILE_SIZE/2 - 1
     pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
 
 
@@ -179,9 +179,12 @@ def new_game_text():
 
 def who_move(player):
     player_font = pygame.font.Font('freesansbold.ttf', 70)
-    player_surafce = player_font.render(player, True, END_COLOR)
+    if player == "x":
+        player_surafce = player_font.render(player, True, X_COLOR)
+    elif player == "o":
+        player_surafce = player_font.render(player, True, O_COLOR)
     player_rect = player_surafce.get_rect()
-    player_rect.topleft = (WINDOWWIDTH - 45, 10)
+    player_rect.topleft = (WINDOWWIDTH - 45, -10)
     DISPLAY_SURFACE.blit(player_surafce, player_rect)
 
 
