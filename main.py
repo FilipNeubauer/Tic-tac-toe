@@ -204,7 +204,7 @@ def main(first_player='x'):
             win(winner)
             new_game_rect = new_game_text()
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
             elif event.type == MOUSEBUTTONUP:
                 coordinates = event.pos
