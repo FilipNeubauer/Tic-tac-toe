@@ -177,6 +177,14 @@ def new_game_text():
     return new_game_rect
 
 
+def who_move(player):
+    player_font = pygame.font.Font('freesansbold.ttf', 70)
+    player_surafce = player_font.render(player, True, END_COLOR)
+    player_rect = player_surafce.get_rect()
+    player_rect.topleft = (WINDOWWIDTH - 45, 10)
+    DISPLAY_SURFACE.blit(player_surafce, player_rect)
+
+
 def main(first_player='x'):
     global DISPLAY_SURFACE, CURRENT_PLAYER
     
@@ -190,6 +198,8 @@ def main(first_player='x'):
     while True:
         pygame.display.update()
         draw_board(game_board)
+        who_move(CURRENT_PLAYER)
+
         if end_game:
             win(winner)
             new_game_rect = new_game_text()
