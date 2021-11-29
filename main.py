@@ -185,6 +185,18 @@ def who_move(player):
     DISPLAY_SURFACE.blit(player_surafce, player_rect)
 
 
+def falling_down(board, x, y):
+    while is_in_board(board, x, y+1):
+        if board.board[y+1][x].type is None:
+            mark = board.board[y][x].type
+            board.board[y][x].type = None
+            board.board[y + 1][x].type = mark
+            y += 1
+        else:
+            return x, y
+    return x, y
+
+
 def main(first_player='x'):
     global DISPLAY_SURFACE, CURRENT_PLAYER
     
@@ -212,6 +224,7 @@ def main(first_player='x'):
                     x, y = get_tile_clicked(game_board, coordinates)
                     if x is not None and game_board.board[y][x].type is None:
                         CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
+                        x, y = falling_down(game_board, x, y)
                         if winning_chain(game_board, x, y):
                             end_game = True
                             if CURRENT_PLAYER == 'o':
