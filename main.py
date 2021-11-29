@@ -5,8 +5,10 @@ from pygame.locals import *
 TILE_SIZE = 40
 WINDOWWIDTH = 600
 WINDOWHEIGHT = 520
+FPS = 30
 
 DISPLAY_SURFACE = None
+FPS_CLOCK = None
 TILE_COLOR = "black"
 BG_COLOR = "white"
 X_COLOR = "red"
@@ -186,21 +188,26 @@ def who_move(player):
 
 
 def falling_down(board, x, y):
+    y_1 = y
     while is_in_board(board, x, y+1):
         if board.board[y+1][x].type is None:
             mark = board.board[y][x].type
             board.board[y][x].type = None
             board.board[y + 1][x].type = mark
             y += 1
+            draw_board(board)
+            pygame.display.update()
+            FPS_CLOCK.tick(FPS)
         else:
             return x, y
     return x, y
 
 
 def main(first_player='x'):
-    global DISPLAY_SURFACE, CURRENT_PLAYER
+    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER
     
     pygame.init()
+    FPS_CLOCK = pygame.time.Clock()
     DISPLAY_SURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     game_board = Board(10, 10)
     game_board.generate()
@@ -209,9 +216,10 @@ def main(first_player='x'):
     winner = None
     while True:
         pygame.display.update()
+
         draw_board(game_board)
         who_move(CURRENT_PLAYER)
-
+        FPS_CLOCK.tick(FPS)
         if end_game:
             win(winner)
             new_game_rect = new_game_text()
