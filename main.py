@@ -10,9 +10,6 @@ FPS = 30
 DISPLAY_SURFACE = None
 
 FPS_CLOCK = None
-TILE_COLOR = "black"
-BG_COLOR = "white"
-X_COLOR = "red"
 TILE_COLOR = "white"
 BG_COLOR = "grey"
 X_COLOR = "blue"
