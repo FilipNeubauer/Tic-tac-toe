@@ -1,6 +1,7 @@
 import sys
 import pygame
 from pygame.locals import *
+import random
 
 TILE_SIZE = 40
 WINDOWWIDTH = 550
@@ -21,6 +22,11 @@ vertical = 'vertical'
 decreasing = 'decreasing'
 increasing = 'increasing'
 
+
+CLOCK = None
+TIMER_X = None
+TIMER_O = None
+DT = None
 
 class Tile:
     def __init__(self, x, y, tile_type):
@@ -207,8 +213,48 @@ def falling_down(board, x, y):
     return x, y
 
 
+def timer(board):
+    global DT, CLOCK, TIMER_X, TIMER_O
+    if CURRENT_PLAYER == "x":
+        TIMER_X -= DT
+        TIMER_O = 30
+        timer = TIMER_X
+    elif CURRENT_PLAYER == "o":
+        TIMER_O -= DT
+        TIMER_X = 30
+        timer = TIMER_O
+    if timer <= 0:
+        time_up(board)
+    font = pygame.font.Font('freesansbold.ttf', 30)
+    txt = font.render(str(round(timer)), True, "black")
+    DISPLAY_SURFACE.blit(txt, (20, 20))
+    DT = CLOCK.tick(30) / 1000
+
+
+def time_up(board):
+    global CURRENT_PLAYER
+    while True:
+        rnd_y = random.randint(0, board.height - 1)
+        rnd_x = random.randint(0, board.width - 1)
+        rnd = board.board[rnd_y][rnd_x].type
+        if rnd is None:
+            board.board[rnd_y][rnd_x].type = CURRENT_PLAYER
+            if CURRENT_PLAYER == "x":
+                CURRENT_PLAYER = "o"
+            elif CURRENT_PLAYER == "o":
+                CURRENT_PLAYER = "x"
+            break
+
+
+
 def main(first_player='x'):
-    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER
+    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER, TIMER_X, TIMER_O, DT, CLOCK
+
+
+    TIMER_X = 30
+    TIMER_O = 30
+    DT = 0    
+    CLOCK = pygame.time.Clock()
     
     pygame.init()
     FPS_CLOCK = pygame.time.Clock()
@@ -245,7 +291,8 @@ def main(first_player='x'):
                                 winner = 'o'
                 else:
                     if new_game_rect.collidepoint(coordinates):
-                        main('o')
+                       main('o')
+        timer(game_board)
 
 
 if __name__ == '__main__':
