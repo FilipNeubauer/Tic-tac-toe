@@ -7,6 +7,10 @@ TILE_SIZE = 40
 WINDOWWIDTH = 550
 WINDOWHEIGHT = 520
 FPS = 30
+TIME = 30
+
+WINNER = None
+END_GAME = None
 
 DISPLAY_SURFACE = None
 
@@ -187,14 +191,15 @@ def new_game_text():
 
 
 def who_move(player):
-    player_font = pygame.font.Font('freesansbold.ttf', 70)
-    if player == "x":
-        player_surafce = player_font.render(player, True, X_COLOR)
-    elif player == "o":
-        player_surafce = player_font.render(player, True, O_COLOR)
-    player_rect = player_surafce.get_rect()
-    player_rect.topleft = (WINDOWWIDTH - 45, -10)
-    DISPLAY_SURFACE.blit(player_surafce, player_rect)
+    if not WINNER:
+        player_font = pygame.font.Font('freesansbold.ttf', 70)
+        if player == "x":
+            player_surafce = player_font.render(player, True, X_COLOR)
+        elif player == "o":
+            player_surafce = player_font.render(player, True, O_COLOR)
+        player_rect = player_surafce.get_rect()
+        player_rect.topleft = (WINDOWWIDTH - 45, -10)
+        DISPLAY_SURFACE.blit(player_surafce, player_rect)
 
 
 def falling_down(board, x, y):
@@ -214,45 +219,50 @@ def falling_down(board, x, y):
 
 
 def timer(board):
-    global DT, CLOCK, TIMER_X, TIMER_O
-    if CURRENT_PLAYER == "x":
-        TIMER_X -= DT
-        TIMER_O = 30
-        timer = TIMER_X
-    elif CURRENT_PLAYER == "o":
-        TIMER_O -= DT
-        TIMER_X = 30
-        timer = TIMER_O
-    if timer <= 0:
-        time_up(board)
-    font = pygame.font.Font('freesansbold.ttf', 30)
-    txt = font.render(str(round(timer)), True, "black")
-    DISPLAY_SURFACE.blit(txt, (20, 20))
-    DT = CLOCK.tick(30) / 1000
+    global DT, CLOCK, TIMER_X, TIMER_O, WINNER
+    if not WINNER:
+        if CURRENT_PLAYER == "x":
+            TIMER_X -= DT
+            TIMER_O = TIME
+            timer = TIMER_X
+        elif CURRENT_PLAYER == "o":
+            TIMER_O -= DT
+            TIMER_X = TIME
+            timer = TIMER_O
+        if timer <= 0:
+            time_up(board)
+        font = pygame.font.Font('freesansbold.ttf', 30)
+        txt = font.render(str(round(timer)), True, "black")
+        DISPLAY_SURFACE.blit(txt, (20, 20))
+        DT = CLOCK.tick(TIME) / 1000
 
 
 def time_up(board):
-    global CURRENT_PLAYER
+    global CURRENT_PLAYER, END_GAME, WINNER
     while True:
-        rnd_y = random.randint(0, board.height - 1)
-        rnd_x = random.randint(0, board.width - 1)
-        rnd = board.board[rnd_y][rnd_x].type
+        y = random.randint(0, board.height - 1)
+        x = random.randint(0, board.width - 1)
+        rnd = board.board[y][x].type
         if rnd is None:
-            board.board[rnd_y][rnd_x].type = CURRENT_PLAYER
-            if CURRENT_PLAYER == "x":
-                CURRENT_PLAYER = "o"
-            elif CURRENT_PLAYER == "o":
-                CURRENT_PLAYER = "x"
+            if x is not None and board.board[y][x].type is None:
+                CURRENT_PLAYER = write_down_mark(board, CURRENT_PLAYER, x, y)
+                x, y = falling_down(board, x, y)
+                if winning_chain(board, x, y):
+                    END_GAME = True
+                    if CURRENT_PLAYER == 'o':
+                        WINNER = 'x'
+                    else:
+                        WINNER = 'o'
             break
 
 
 
 def main(first_player='x'):
-    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER, TIMER_X, TIMER_O, DT, CLOCK
+    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER, TIMER_X, TIMER_O, DT, CLOCK, WINNER, END_GAME
 
 
-    TIMER_X = 30
-    TIMER_O = 30
+    TIMER_X = TIME
+    TIMER_O = TIME
     DT = 0    
     CLOCK = pygame.time.Clock()
     
@@ -262,33 +272,33 @@ def main(first_player='x'):
     game_board = Board(10, 10)
     game_board.generate()
     CURRENT_PLAYER = first_player
-    end_game = None
-    winner = None
+    END_GAME = None
+    WINNER = None
     while True:
         pygame.display.update()
 
         draw_board(game_board)
         who_move(CURRENT_PLAYER)
         FPS_CLOCK.tick(FPS)
-        if end_game:
-            win(winner)
+        if END_GAME:
+            win(WINNER)
             new_game_rect = new_game_text()
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
             elif event.type == MOUSEBUTTONUP:
                 coordinates = event.pos
-                if not end_game:
+                if not END_GAME:
                     x, y = get_tile_clicked(game_board, coordinates)
                     if x is not None and game_board.board[y][x].type is None:
                         CURRENT_PLAYER = write_down_mark(game_board, CURRENT_PLAYER, x, y)
                         x, y = falling_down(game_board, x, y)
                         if winning_chain(game_board, x, y):
-                            end_game = True
+                            END_GAME = True
                             if CURRENT_PLAYER == 'o':
-                                winner = 'x'
+                                WINNER = 'x'
                             else:
-                                winner = 'o'
+                                WINNER = 'o'
                 else:
                     if new_game_rect.collidepoint(coordinates):
                        main('o')
