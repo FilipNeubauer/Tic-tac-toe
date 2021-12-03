@@ -26,6 +26,7 @@ vertical = 'vertical'
 decreasing = 'decreasing'
 increasing = 'increasing'
 
+START = "x"
 
 CLOCK = None
 TIMER_X = None
@@ -191,7 +192,7 @@ def new_game_text():
 
 
 def who_move(player):
-    if not WINNER:
+    if not END_GAME:
         player_font = pygame.font.Font('freesansbold.ttf', 70)
         if player == "x":
             player_surafce = player_font.render(player, True, X_COLOR)
@@ -219,8 +220,8 @@ def falling_down(board, x, y):
 
 
 def timer(board):
-    global DT, CLOCK, TIMER_X, TIMER_O, WINNER
-    if not WINNER:
+    global DT, CLOCK, TIMER_X, TIMER_O, WINNER, END_GAME
+    if not END_GAME:
         if CURRENT_PLAYER == "x":
             TIMER_X -= DT
             TIMER_O = TIME
@@ -256,10 +257,24 @@ def time_up(board):
             break
 
 
+def draw(board):
+    for i in board.board:
+        for j in i:
+            if j.type is None:
+                return False
+    return True
 
-def main(first_player='x'):
-    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER, TIMER_X, TIMER_O, DT, CLOCK, WINNER, END_GAME
 
+def draw_text():
+    game_end_font = pygame.font.Font('freesansbold.ttf', 130)
+    game_end_surface = game_end_font.render("DRAW!", True, END_COLOR)
+    game_end_rect = game_end_surface.get_rect()
+    game_end_rect.midtop = (WINDOWWIDTH/2, 10)
+    DISPLAY_SURFACE.blit(game_end_surface, game_end_rect)
+
+
+def main(first_player=START):
+    global FPS_CLOCK, DISPLAY_SURFACE, CURRENT_PLAYER, TIMER_X, TIMER_O, DT, CLOCK, WINNER, END_GAME, START
 
     TIMER_X = TIME
     TIMER_O = TIME
@@ -269,20 +284,31 @@ def main(first_player='x'):
     pygame.init()
     FPS_CLOCK = pygame.time.Clock()
     DISPLAY_SURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    pygame.display.set_caption("Gravitational Tic-Tac-Toe")
     game_board = Board(10, 10)
     game_board.generate()
     CURRENT_PLAYER = first_player
     END_GAME = None
     WINNER = None
+    draw_check = False
     while True:
         pygame.display.update()
 
         draw_board(game_board)
         who_move(CURRENT_PLAYER)
         FPS_CLOCK.tick(FPS)
-        if END_GAME:
+
+        if WINNER is not None:
             win(WINNER)
             new_game_rect = new_game_text()
+
+        draw_check = draw(game_board)
+
+        if draw_check and WINNER is None:
+            END_GAME = True
+            draw_text()
+            new_game_rect = new_game_text()
+
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
@@ -301,7 +327,13 @@ def main(first_player='x'):
                                 WINNER = 'o'
                 else:
                     if new_game_rect.collidepoint(coordinates):
-                       main('o')
+                        if START == "x":
+                            START = "o"
+                            main('o')
+                        elif START == "o":
+                            START = "x"
+                            main("x")   
+                        
         timer(game_board)
 
 
