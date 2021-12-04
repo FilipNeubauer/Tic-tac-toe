@@ -1,3 +1,4 @@
+import math
 import sys
 import pygame
 from pygame.locals import *
@@ -6,6 +7,7 @@ import random
 TILE_SIZE = 40
 WINDOWWIDTH = 550
 WINDOWHEIGHT = 520
+G = 10
 FPS = 30
 TIME = 30
 
@@ -64,8 +66,8 @@ def terminate():
 def get_left_top_of_tile(board, tile):
     x, y = tile.x, tile.y
     left = x * (TILE_SIZE + 1) + board.x_margin 
-    right = y * (TILE_SIZE + 1) + board.y_margin 
-    return left, right
+    top = y * (TILE_SIZE + 1) + board.y_margin
+    return left, top
 
 
 def draw_tile(board, tile):
@@ -205,17 +207,38 @@ def who_move(player):
 
 def falling_down(board, x, y):
     y_1 = y
+    mark = board.board[y][x].type
     while is_in_board(board, x, y+1):
         if board.board[y+1][x].type is None:
-            mark = board.board[y][x].type
             board.board[y][x].type = None
             board.board[y + 1][x].type = mark
             y += 1
-            draw_board(board)
-            pygame.display.update()
-            FPS_CLOCK.tick(FPS)
+
         else:
-            return x, y
+            break
+    time = round(math.sqrt(2*(y - y_1)*TILE_SIZE/G))
+    for i in range(time):
+        draw_board(board)
+        draw_tile(board, board.board[y][x])
+        left = x * (TILE_SIZE + 1) + board.x_margin
+        top = y_1 * (TILE_SIZE + 1) + board.y_margin + 0.5*G*i**2
+        if mark == 'x':
+            left_top = (left, top)
+            right_bot = (left + TILE_SIZE, top + TILE_SIZE)
+            left_bot = (left, top + TILE_SIZE)
+            right_top = (left + TILE_SIZE, top)
+            pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_top, right_bot, width=2)
+            pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_bot, right_top, width=2)
+        elif mark == 'o':
+            left = left + TILE_SIZE / 2
+            top = top + TILE_SIZE / 2
+            radius = TILE_SIZE / 2 - 1
+            pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
+        pygame.display.update()
+        FPS_CLOCK.tick(FPS)
+    draw_board(board)
+    pygame.display.update()
+    FPS_CLOCK.tick(FPS)
     return x, y
 
 
