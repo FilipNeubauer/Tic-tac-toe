@@ -208,20 +208,16 @@ def who_move(player):
 def falling_down(board, x, y):
     y_1 = y
     mark = board.board[y][x].type
-    while is_in_board(board, x, y+1):
-        if board.board[y+1][x].type is None:
-            board.board[y][x].type = None
-            board.board[y + 1][x].type = mark
-            y += 1
-
-        else:
-            break
+    while is_in_board(board, x, y+1) and board.board[y+1][x].type is None:
+        y += 1
+    board.board[y_1][x].type = None
+    board.board[y][x].type = mark
     time = round(math.sqrt(2*(y - y_1)*TILE_SIZE/G))
     for i in range(time):
         draw_board(board)
         draw_tile(board, board.board[y][x])
         left = x * (TILE_SIZE + 1) + board.x_margin
-        top = y_1 * (TILE_SIZE + 1) + board.y_margin + 0.5*G*i**2
+        top = y_1 * (TILE_SIZE + 1) + board.y_margin + 0.5*G*(i**2)
         if mark == 'x':
             left_top = (left, top)
             right_bot = (left + TILE_SIZE, top + TILE_SIZE)
