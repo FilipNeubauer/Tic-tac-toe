@@ -205,6 +205,22 @@ def who_move(player):
         DISPLAY_SURFACE.blit(player_surafce, player_rect)
 
 
+def draw_x_outside(left, top):
+    left_top = (left, top)
+    right_bot = (left + TILE_SIZE, top + TILE_SIZE)
+    left_bot = (left, top + TILE_SIZE)
+    right_top = (left + TILE_SIZE, top)
+    pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_top, right_bot, width=2)
+    pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_bot, right_top, width=2)
+
+
+def draw_o_outside(left, top):
+    left = left + TILE_SIZE / 2
+    top = top + TILE_SIZE / 2
+    radius = TILE_SIZE / 2 - 1
+    pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
+
+
 def falling_down(board, x, y):
     y_1 = y
     mark = board.board[y][x].type
@@ -219,17 +235,9 @@ def falling_down(board, x, y):
         left = x * (TILE_SIZE + 1) + board.x_margin
         top = y_1 * (TILE_SIZE + 1) + board.y_margin + 0.5*G*(i**2)
         if mark == 'x':
-            left_top = (left, top)
-            right_bot = (left + TILE_SIZE, top + TILE_SIZE)
-            left_bot = (left, top + TILE_SIZE)
-            right_top = (left + TILE_SIZE, top)
-            pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_top, right_bot, width=2)
-            pygame.draw.line(DISPLAY_SURFACE, X_COLOR, left_bot, right_top, width=2)
+            draw_x_outside(left, top)
         elif mark == 'o':
-            left = left + TILE_SIZE / 2
-            top = top + TILE_SIZE / 2
-            radius = TILE_SIZE / 2 - 1
-            pygame.draw.circle(DISPLAY_SURFACE, O_COLOR, (left, top), radius, width=2)
+            draw_o_outside(left, top)
         pygame.display.update()
         FPS_CLOCK.tick(FPS)
     draw_board(board)
